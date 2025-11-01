@@ -1,0 +1,65 @@
+import { observer } from "mobx-react";
+import { useParams } from "next/navigation";
+// plane imports
+import { EUserPermissionsLevel } from "@plane/constants";
+import { useTranslation } from "@plane/i18n";
+import { EmptyStateDetailed } from "@plane/propel/empty-state";
+import { EIssuesStoreType, EUserProjectRoles } from "@plane/types";
+// hooks
+import { useUserPermissions } from "@/hooks/store/user";
+import { useWorkItemFilterInstance } from "@/hooks/store/work-item-filters/use-work-item-filter-instance";
+import { useAppRouter } from "@/hooks/use-app-router";
+
+export const ProjectArchivedEmptyState: React.FC = observer(() => {
+  // router
+  const router = useAppRouter();
+  const { workspaceSlug: routerWorkspaceSlug, projectId: routerProjectId } = useParams();
+  const workspaceSlug = routerWorkspaceSlug ? routerWorkspaceSlug.toString() : undefined;
+  const projectId = routerProjectId ? routerProjectId.toString() : undefined;
+  // plane hooks
+  const { t } = useTranslation();
+  // store hooks
+  const { allowPermissions } = useUserPermissions();
+  // derived values
+  const archivedWorkItemFilter = projectId
+    ? useWorkItemFilterInstance(EIssuesStoreType.ARCHIVED, projectId)
+    : undefined;
+  const canPerformEmptyStateActions = allowPermissions(
+    [EUserProjectRoles.ADMIN, EUserProjectRoles.MEMBER],
+    EUserPermissionsLevel.PROJECT
+  );
+
+  return (
+    <div className="relative h-full w-full overflow-y-auto">
+      {archivedWorkItemFilter?.hasActiveFilters ? (
+        <EmptyStateDetailed
+          assetKey="search"
+          title={t("common.search.title")}
+          description={t("common.search.description")}
+          actions={[
+            {
+              label: t("common.search.cta_secondary"),
+              onClick: archivedWorkItemFilter?.clearFilters,
+              disabled: !canPerformEmptyStateActions || !archivedWorkItemFilter,
+              variant: "outline-primary",
+            },
+          ]}
+        />
+      ) : (
+        <EmptyStateDetailed
+          assetKey="archived-work-item"
+          title={t("workspace.archive_work_items.title")}
+          description={t("workspace.archive_work_items.description")}
+          actions={[
+            {
+              label: t("workspace.archive_work_items.cta_primary"),
+              onClick: () => router.push(`/${workspaceSlug}/settings/projects/${projectId}/automations`),
+              disabled: !canPerformEmptyStateActions,
+              variant: "primary",
+            },
+          ]}
+        />
+      )}
+    </div>
+  );
+});
