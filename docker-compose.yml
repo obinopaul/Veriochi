@@ -22,18 +22,6 @@ services:
       - api
       - web
 
-  space:
-    container_name: space
-    build:
-      context: .
-      dockerfile: ./apps/space/Dockerfile.space
-      args:
-        DOCKER_BUILDKIT: 1
-    restart: always
-    depends_on:
-      - api
-      - web
-
   api:
     container_name: api
     build:
@@ -95,18 +83,6 @@ services:
     depends_on:
       - plane-db
       - plane-redis
-
-  live:
-    container_name: plane-live
-    build:
-      context: .
-      dockerfile: ./apps/live/Dockerfile.live
-      args:
-        DOCKER_BUILDKIT: 1
-    restart: always
-    env_file:
-      - ./.env
-      - ./apps/live/.env
 
   plane-db:
     container_name: plane-db

@@ -1,16 +1,14 @@
 # Plane Community All-In-One (AIO) Docker Image
 
-The Plane Community All-In-One Docker image packages all Plane services into a single container for easy deployment and testing. This image includes web interface, API server, background workers, live server, and more.
+The Plane Community All-In-One Docker image packages the remaining Plane services into a single container for easy deployment and testing. This image includes the web interface, API server, background workers, and proxy.
 
 ## What's Included
 
-The AIO image contains the following services:
+The AIO image bundles the following services:
 
 - **Web App** (Port 3001): Main Plane web interface
-- **Space** (Port 3002): Public project spaces
 - **Admin** (Port 3003): Administrative interface  
 - **API Server** (Port 3004): Backend API
-- **Live Server** (Port 3005): Real-time collaboration
 - **Proxy** (Port 80, 443): Caddy reverse proxy
 - **Worker & Beat**: Background task processing
 
@@ -93,7 +91,6 @@ docker run --name myaio --rm -it \
 #### Security & Secrets
 
 - `SECRET_KEY`: Django secret key (default provided)
-- `LIVE_SERVER_SECRET_KEY`: Live server secret (default provided)
 
 #### File Handling
 

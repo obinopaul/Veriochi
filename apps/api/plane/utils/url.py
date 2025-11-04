@@ -41,10 +41,14 @@ def contains_url(value: str) -> bool:
     # Additional safety: truncate very long lines that might contain URLs
     lines = value.split("\n")
     for line in lines:
-        if len(line) > 500:  # Process only reasonable length lines
-            line = line[:500]
-        if URL_PATTERN.search(line):
-            return True
+        if len(line) > 500:  # Process both ends of long lines to catch trailing URLs
+            segments = (line[:500], line[-500:])
+        else:
+            segments = (line,)
+
+        for segment in segments:
+            if URL_PATTERN.search(segment):
+                return True
 
     return False
 

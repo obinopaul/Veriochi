@@ -55,10 +55,6 @@ def get_allowed_hosts() -> list[str]:
         # Get only the host
         host = urlparse(settings.ADMIN_BASE_URL).netloc
         allowed_hosts.append(host)
-    if settings.SPACE_BASE_URL:
-        # Get only the host
-        host = urlparse(settings.SPACE_BASE_URL).netloc
-        allowed_hosts.append(host)
     return allowed_hosts
 
 
@@ -78,6 +74,10 @@ def validate_next_path(next_path: str) -> str:
     # Block absolute URLs or anything with scheme/netloc
     if parsed_url.scheme or parsed_url.netloc:
         next_path = parsed_url.path  # Extract only the path component
+
+    # Normalise relative paths without leading slash for convenience
+    if next_path and not next_path.startswith("/"):
+        next_path = f"/{next_path}"
 
     # Must start with a forward slash and not be empty
     if not next_path or not next_path.startswith("/"):
@@ -133,8 +133,14 @@ def get_safe_redirect_url(base_url: str, next_path: str = "", params: dict = {})
     else:
         url = base_url
 
-    # Check if the URL is allowed
-    if url_has_allowed_host_and_scheme(url, allowed_hosts=get_allowed_hosts()):
+    # Check if the URL is allowed using configured origins, adding the base URL host for completeness
+    allowed_hosts = get_allowed_hosts()
+    base_host = urlparse(base_url).netloc
+    if base_host:
+        allowed_hosts = [*{*allowed_hosts, base_host}]
+    if not allowed_hosts:
+        allowed_hosts = settings.ALLOWED_HOSTS
+    if url_has_allowed_host_and_scheme(url, allowed_hosts=allowed_hosts):
         return url
 
     # Return the base URL if the URL is not allowed

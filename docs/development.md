@@ -27,8 +27,6 @@ Local iterative development (fast route)
    | --- | --- | --- | --- | --- |
    | Public web (`apps/web`) | `pnpm --filter ./apps/web dev` | 3000 | Next.js dev server with hot reload. | Full product surface for signed-in users: renders the workspace shell, navigation, dashboards, issue layouts (kanban, list, calendar, gantt, spreadsheet), project settings, and user profile flows. Uses the App Router with server components, MobX stores under `core/store`, and SWR-backed data hooks to orchestrate project data from the API. All customer-facing experiential work happens here, including feature flag evaluation, onboarding walkthroughs, and integrations surfaced via `@plane/ui` primitives. |
    | Admin console (`apps/admin`) | `pnpm --filter ./apps/admin dev` | 3001 | Shares components with `apps/web`; keep API running. | Administrative control plane for operators and support staff. Provides user/account lifecycle actions, tenant provisioning, plan enforcement, impersonation tools, and system monitoring dashboards. Mirrors the main web app’s component stack but exposes privileged routes guarded by admin auth middleware and relies heavily on `@plane/services` for elevated API endpoints. |
-   | Workspace UI (`apps/space`) | `pnpm --filter ./apps/space dev` | 3002 | Loads tenant views; requires correct API base URL. | Slimmed Next.js client aimed at embeddable or publicly shareable boards. Hosts read-focused issue layouts, share links, and minimal authentication (magic links / tokens) so workspaces can publish boards to external audiences. Reuses the same MobX stores but toggles features via publish settings and environment flags so it can run inside iframes or partner portals. |
-   | Realtime server (`apps/live`) | `pnpm --filter apps/live dev` | 4000 (check `.env`) | Watches TypeScript with `tsdown`; restarts Node on rebuild. Build its workspace deps once with `pnpm -r --filter @plane/logger --filter @plane/decorators --filter @plane/editor --filter @plane/types build`. | Node/Express Hocuspocus server that backs collaborative editing in the rich-text editor. Boots Redis, the Yjs collaborative engine, controller decorators, and structured logging to bridge websocket clients with durable state. Exposes health/docs endpoints through `@plane/decorators`, enforces CORS/helmet, and coordinates document lifecycle, awareness updates, and persistence adapters so editor sessions stay synchronized. |
    | UI library (`packages/ui`) | `pnpm --filter @plane/ui dev` | n/a | Rebuilds shared components; frontends pick up changes automatically. | Central design system and component kit consumed by every Next.js surface. Ships Tailwind-driven primitives, form controls, layout shells, modals, and iconography that the apps register through Turborepo pipelines. Running the dev watcher allows instant feedback when tweaking tokens, theming, or complex widgets like kanban cards and dashboard tiles. |
 
 3. For the Django API stack open another tab:
@@ -36,9 +34,9 @@ Local iterative development (fast route)
    - Option A (containers): `docker compose -f docker-compose-local.yml up api worker beat-worker` to run gunicorn, Celery worker, and beat with live code mounts.
    - Option B (host Python): inside `apps/api`, create a venv (`python -m venv .venv && .\.venv\Scripts\activate` on Windows), install deps (`pip install -r requirements.txt`), and run `python manage.py runserver 0.0.0.0:8000`. Start Celery with `celery -A plane worker -l info` in another tab if you need background jobs.
 
-4. Keep `apps/*/.env` files in sync so each app points at the correct API (`NEXT_PUBLIC_API_URL`, `SPACE_BASE_URL`, etc.). Refer to `docs/apps/*.md` for the precise environment variables.
+4. Keep `apps/*/.env` files in sync so each app points at the correct API (`NEXT_PUBLIC_API_URL`, app-specific secrets, etc.). Refer to `docs/apps/*.md` for the precise environment variables.
 
-Tip: if you prefer a single command that manages multiple dev servers, use Turborepo: `pnpm -w dlx turbo run dev --parallel --filter=apps/web --filter=apps/admin --filter=apps/space`, but separate tabs give clearer logs when debugging.
+Tip: if you prefer a single command that manages multiple dev servers, use Turborepo: `pnpm -w dlx turbo run dev --parallel --filter=apps/web --filter=apps/admin`, but separate tabs give clearer logs when debugging.
 
 Testing and checks
 
@@ -57,19 +55,18 @@ Notes and troubleshooting
 | --- | --- | --- | --- |
 | Public web (`apps/web`) | The main Plane product: project dashboards, backlogs, sprints, issue detail drawers, dashboards, personal work views, and onboarding flows. | Lets teammates plan work, move cards across boards, edit tasks, update cycles, review analytics, and manage their workspace settings. | The app most customers visit daily; if it is down, the core experience is missing. |
 | Admin console (`apps/admin`) | A control-room style interface with user/account tables, billing and plan controls, and system health panels. | Gives support or ops staff tools to reset passwords, promote/demote roles, review audit logs, toggle features, and check service status. | Run when you need to perform customer-support actions or verify SaaS configuration outside the regular workspace UI. |
-| Workspace UI (`apps/space`) | A lighter, shareable board or workspace that can be embedded or opened via public links, often with brand-neutral chrome. | Presents curated boards, read-only or limited-edit views, and magical link authentication so partners or clients can follow progress without a full account. | Useful for publishing project progress to stakeholders or integrating boards into another product/portal. |
-| Realtime server (`apps/live`) | No direct UI; it silently powers live# Frontend UI Reference
+| UI library (`packages/ui`) | Not a standalone page; it supplies buttons, panels, data grids, modals, and visual themes that appear across every Plane screen. | Centralizes visual design rules, interactive widgets, and accessibility patterns so each app looks and behaves consistently. | Run the watcher when you are polishing the look/feel of any frontend or developing new shared components. |
 
-This document maps the Veriochi/Plane frontend surface area. It should help you orient yourself when working on landing flows, signed-in workspace screens, or the public sharing experience. The focus is on the JavaScript/TypeScript UI that lives under `apps/web` (internal product UI) and `apps/space` (public views), with references to the MobX stores and shared packages that power them.
+This document maps the Veriochi/Plane frontend surface area. It should help you orient yourself when working on landing flows or the signed-in workspace screens. The focus is on the JavaScript/TypeScript UI that lives under `apps/web`, with references to the MobX stores and shared packages that power it. The admin app shares most of the stack, so notes call that out where helpful.
 
 ---
 
 ## 1. Applications and Entry Points
 
 - **`apps/web`** – The primary authenticated product. It uses the Next.js App Router (`app/`) with client components under `core/` and `ce/` (community edition) while reserving `ee/` for enterprise-specific overrides. Shared styling imports live in `app/(all)/layout.tsx`.
-- **`apps/space`** – A slim Next.js app for publicly published boards and pages. Visitors can authenticate just enough to view a shared workspace (`apps/space/app/views/[anchor]/page.tsx`).
 - **`apps/admin`** – Separate admin-only Next.js application (`docs/apps/admin.md`). It reuses many of the `@plane/*` packages documented below.
-- **Supporting runtimes** – Realtime collaboration (`apps/live`), reverse proxy (`apps/proxy`), and the Django API feed data to every frontend. Docker targets for each app are defined in `apps/*/Dockerfile.*` and described in `docs/docker-development.md`.
+- **Supporting runtimes** – The reverse proxy (`apps/proxy`) and the Django API feed data to every frontend. Docker targets for each app are defined in `apps/*/Dockerfile.*` and described in `docs/docker-development.md`.
+- **Retired surfaces** – Public sharing (`apps/space`) and realtime collaboration (`apps/live`) have been removed from the workspace. Legacy mentions only exist for historical context while the codebase is tidied up.
 
 Each Next.js application consumes the shared packages declared in `package.json` (e.g. `@plane/ui`, `@plane/services`, `@plane/types`) so the UI surface is consistent.
 
@@ -86,7 +83,7 @@ The core authentication flow is implemented in `apps/web/core/components/account
 - **OAuth providers** – Google, GitHub, and GitLab buttons are wired via `OAuthOptions` and `API_BASE_URL` so redirects land back with `next_path` intact.
 - **Legal and messaging** – `TermsAndConditions`, `AuthBanner`, and `AuthHeader` components handle regulatory copy and animated banners.
 
-When an already authenticated visitor hits `/`, `UserLoggedIn` from `apps/space/core/components/account/user-logged-in.tsx` nudges them to open the intended workspace while keeping the public shell.
+When an already authenticated visitor hits `/`, `AuthenticationWrapper` skips the marketing shell and routes them straight into their intended workspace context.
 
 Onboarding past authentication uses dedicated routes under `apps/web/app/(all)/onboarding/`. The `TourRoot` overlay (`core/components/onboarding/tour`) is triggered from the workspace dashboard as soon as `useUserProfile` detects `is_tour_completed === false`.
 
@@ -249,7 +246,7 @@ Full-page issue detail routes live under `app/(projects)/projects/(detail)/[proj
 Every layout consumes the shared MobX stores defined under `apps/web/core/store/issue/`:
 
 - **`BaseIssuesStore`** – Handles grouping, pagination, loader state, and denormalized issue maps. It centralizes `processIssueResponse`, `updateGroupedIssueIds`, and cursor management so all views behave the same way.
-- **`IssueStore` subclasses** – Project, workspace, module, cycle, draft, epic, and public stores extend `BaseIssuesStore` to add API-specific fetch methods (see `issue.store.ts`, `apps/space/core/store/issue.store.ts`).
+- **`IssueStore` subclasses** – Project, workspace, module, cycle, draft, and epic stores extend `BaseIssuesStore` to add API-specific fetch methods (`issue.store.ts`). The legacy public view store disappeared with the `apps/space` removal.
 - **Services** – API clients live in `@plane/services` (e.g. `SitesIssueService`). All fetch methods accept `IssuePaginationOptions` from `@plane/types` to standardize grouping, filters, and per-page limits.
 - **Actions** – `useIssuesActions` orchestrates mutations (quick add, update, archive) and publishes telemetry through `captureSuccess`/`captureError` so analytics capture retention events.
 
@@ -286,16 +283,9 @@ Data contracts for dashboard widgets live in `packages/types/src/dashboard.ts`. 
 
 ---
 
-## 14. Public Sharing (`apps/space`)
+## 14. Retired Public Sharing Surface
 
-`apps/space` provides a constrained UI for read-only viewers:
-
-- **Routing** – Visiting `/views/[anchor]` resolves a published project view through `SitesProjectPublishService` (`apps/space/app/[workspaceSlug]/[projectId]/page.tsx` redirects from canonical workspace/project URLs). `publishSettings` hold toggles like comments/reactions/votes (`packages/types/src/views.ts`).
-- **Authentication** – `AuthView` in `apps/space/core/components/views/auth.tsx` mirrors the email/OAuth flows but strips workspace chrome. `UserLoggedIn` guides fully signed-in users to open the main app for editing.
-- **Issue layouts** – `IssuesLayoutsRoot` (`apps/space/core/components/issues/issue-layouts/root.tsx`) fetches grouped public issues with SWR and renders list or kanban layouts using the same display components as the internal app, with editing disabled.
-- **Peek overlays** – Public viewers still get `IssuePeekOverview` (`apps/space/core/components/issues/peek-overview`) with description, reactions, and properties, subject to publish settings.
-
-This app is intended for embedding or sharing curated views without exposing the entire product shell.
+The standalone public sharing app (`apps/space`) has been removed. Published view types such as `IPublishedProjectView` remain in `@plane/types` for now, but the UI entry points and Next.js routes no longer exist. If you uncover leftover publish modals or services, treat them as cleanup candidates or wrap them in new product requirements before reintroducing sharing.
 
 ---
 
@@ -318,7 +308,7 @@ When adding new UI features, follow these patterns:
 1. **New dashboard widget** – Add it to `HOME_WIDGETS_LIST` (`core/components/home/home-dashboard-widgets.tsx`), create a component under `core/components/home/widgets/<name>/`, and wire fetch logic into `dashboard.store.ts`. Provide translations via `@plane/i18n` keys.
 2. **New issue layout** – Extend `EIssueLayoutTypes` in `packages/types/src/issues/issue.ts`, create a root component under `issue-layouts/<layout>/roots`, and register it in the switch statements (`ProjectIssueLayout`, `WorkspaceActiveLayout`). Ensure filters, display properties, and quick actions integrate via the shared HOCs.
 3. **Sidebar navigation item** – Update `WORKSPACE_SIDEBAR_DYNAMIC_NAVIGATION_ITEMS_LINKS` and supply a component in `plane-web/components/workspace/sidebar/extended-sidebar-item.tsx`. Persist drag/drop order through `updateSidebarPreference`.
-4. **Public view capability** – When exposing a feature to published spaces, duplicate or wrap the existing component in `apps/space/core/components/`, ensuring all mutations and privileged actions are disabled.
+4. **Legacy public sharing** – If published views return, revisit the archived `apps/space` patterns and reimplement read-only guards instead of reviving the deleted files wholesale.
 5. **Stores and types** – Define new data contracts in `@plane/types` first, update the relevant MobX store (`core/store/...`), then consume the store in UI components using the established `useX` hooks under `core/hooks/store/`.
 
 ---
@@ -335,11 +325,8 @@ When adding new UI features, follow these patterns:
 | Peek Overview | `core/components/issues/peek-overview/` |
 | Modules & Cycles | `core/components/modules/`, `core/components/cycles/`, `packages/types/src/module/`, `.../cycle/` |
 | Stickies | `core/components/stickies/`, `core/store/sticky/sticky.store.ts` |
-| Public Space | `apps/space/app/`, `apps/space/core/components/` |
 
 This reference should make it easier to trace any UI feature back to its entry point, store, and type definitions so you can extend or audit the frontend with confidence.
- cursors, collaborative rich-text editing, and presence indicators inside the product. | Keeps everyone’s editors in sync, persists collaborative documents, and broadcasts awareness (who’s online, who is editing). If it is off, shared documents stop updating in real time. | Start it whenever you expect multiple people to edit docs simultaneously or want to test collaborative features end-to-end. |
-| UI library (`packages/ui`) | Not a standalone page; it supplies buttons, panels, data grids, modals, and visual themes that appear across every Plane screen. | Centralizes visual design rules, interactive widgets, and accessibility patterns so each app looks and behaves consistently. | Run the watcher when you are polishing the look/feel of any frontend or developing new shared components. |
 
 ### Feature deep dive (non-technical)
 
@@ -364,24 +351,6 @@ This reference should make it easier to trace any UI feature back to its entry p
 | Health & status panels | Dashboards summarizing system heartbeat and recent incidents. | Gives internal teams confidence before announcing fixes or maintenances. |
 | Impersonation & access tools | Safe flows to jump into a customer’s view with audit trails. | Speeds up debugging and support without asking for passwords. |
 
-#### Workspace UI (`apps/space`)
-
-| Feature | What viewers experience | Why it matters |
-| --- | --- | --- |
-| Public boards | Shared read-focused boards with lightweight navigation. | Lets stakeholders follow progress without joining the main workspace. |
-| Magic link access | Email or token-based access that unlocks the shared view. | Provides controlled sharing without managing full user accounts. |
-| Peek panels | Quick detail overlays showing descriptions, comments, and reactions. | Keeps visitors informed without exposing internal editing tools. |
-| Branding & presentation | Clean, distraction-free chrome with room for custom branding. | Makes embeds and public links feel polished when presented to clients. |
-
-#### Realtime server (`apps/live`)
-
-| Feature | What collaborators feel | Why it matters |
-| --- | --- | --- |
-| Live editing sync | Everyone sees text updates, cursor movements, and selections instantly. | Prevents conflicting edits and keeps brainstorms flowing smoothly. |
-| Presence indicators | Avatars and status signals show who is in the document. | Builds trust that teammates are present and working together in real time. |
-| Resilience & recovery | Automatic reconnection and state recovery if someone drops offline. | Protects against lost work during network hiccups or browser refreshes. |
-| Secure gateways | Verifies requests and filters origins before letting sessions connect. | Keeps collaborative content private even though websockets stay open. |
-
 #### UI library (`packages/ui`)
 
 | Feature | Where it shows up | Why it matters |
@@ -391,3 +360,7 @@ This reference should make it easier to trace any UI feature back to its entry p
 | Data displays | Tables, cards, charts, and pill badges. | Ensures data-heavy screens stay readable and responsive on any device. |
 | Interaction patterns | Modals, toasts, tooltips, and command palette wrappers. | Gives developers plug-and-play interactions so behavior is predictable for users. |
 | Theme support | Dark/light modes and customizable tokens. | Allows quick theming changes without touching every screen manually. |
+
+#### Retired surfaces
+
+Public sharing (`apps/space`) and the realtime collaboration service (`apps/live`) have been sunset. If your work touches publish toggles, collaborative editor hooks, or websocket infrastructure, treat the references as deprecation cleanup rather than active product areas.

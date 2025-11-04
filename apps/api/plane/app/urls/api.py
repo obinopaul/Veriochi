@@ -11,7 +11,7 @@ urlpatterns = [
     path(
         "users/api-tokens/<uuid:pk>/",
         ApiTokenEndpoint.as_view(),
-        name="api-tokens-details",
+        name="api-tokens",
     ),
     path(
         "workspaces/<str:slug>/service-api-tokens/",

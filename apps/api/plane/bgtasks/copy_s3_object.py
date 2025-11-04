@@ -1,18 +1,13 @@
 # Python imports
 import uuid
 import base64
-import requests
 from bs4 import BeautifulSoup
 
 # Django imports
-from django.conf import settings
-
-# Module imports
 from plane.db.models import FileAsset, Page, Issue
 from plane.utils.exception_logger import log_exception
 from plane.settings.storage import S3Storage
 from celery import shared_task
-from plane.utils.url import normalize_url_path
 
 
 def get_entity_id_field(entity_type, entity_id):
@@ -59,25 +54,8 @@ def update_description(entity, duplicated_assets, tag):
     return updated_html
 
 
-# Get the description binary and description from the live server
+# Legacy placeholder: description conversion is not available without the live service.
 def sync_with_external_service(entity_name, description_html):
-    try:
-        data = {
-            "description_html": description_html,
-            "variant": "rich" if entity_name == "PAGE" else "document",
-        }
-
-        live_url = settings.LIVE_URL
-        if not live_url:
-            return {}
-
-        url = normalize_url_path(f"{live_url}/convert-document/")
-
-        response = requests.post(url, json=data, headers=None)
-        if response.status_code == 200:
-            return response.json()
-    except requests.RequestException as e:
-        log_exception(e)
     return {}
 
 
@@ -123,7 +101,7 @@ def copy_s3_objects_of_description_and_assets(entity_name, entity_identifier, pr
     Step 1: Extract asset ids from the description_html of the entity
     Step 2: Duplicate the assets
     Step 3: Update the description_html of the entity with the new asset ids (change the src of img tag)
-    Step 4: Request the live server to generate the description_binary and description for the entity
+    Step 4: (Legacy) Attempt to convert the description using the retired live service
 
     """
     try:

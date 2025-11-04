@@ -2,17 +2,8 @@
 
 import { observer } from "mobx-react";
 import { useParams } from "next/navigation";
-// icons
-import { Circle, ExternalLink } from "lucide-react";
 // plane imports
-import {
-  EUserPermissions,
-  EUserPermissionsLevel,
-  SPACE_BASE_PATH,
-  SPACE_BASE_URL,
-  WORK_ITEM_TRACKER_ELEMENTS,
-  EProjectFeatureKey,
-} from "@plane/constants";
+import { EUserPermissions, EUserPermissionsLevel, WORK_ITEM_TRACKER_ELEMENTS, EProjectFeatureKey } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Button } from "@plane/propel/button";
 import { Tooltip } from "@plane/propel/tooltip";
@@ -50,9 +41,6 @@ export const IssuesHeader = observer(() => {
   const { allowPermissions } = useUserPermissions();
   const { isMobile } = usePlatformOS();
 
-  const SPACE_APP_URL = (SPACE_BASE_URL.trim() === "" ? window.location.origin : SPACE_BASE_URL) + SPACE_BASE_PATH;
-  const publishedURL = `${SPACE_APP_URL}/issues/${currentProjectDetails?.anchor}`;
-
   const issuesCount = getGroupIssueCount(undefined, undefined, false);
   const canUserCreateIssue = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
@@ -81,20 +69,6 @@ export const IssuesHeader = observer(() => {
             </Tooltip>
           ) : null}
         </div>
-        {currentProjectDetails?.anchor ? (
-          <a
-            href={publishedURL}
-            className="group flex items-center gap-1.5 rounded bg-custom-primary-100/10 px-2.5 py-1 text-xs font-medium text-custom-primary-100"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Circle className="h-1.5 w-1.5 fill-custom-primary-100" strokeWidth={2} />
-            {t("workspace_projects.network.public.title")}
-            <ExternalLink className="hidden h-3 w-3 group-hover:block" strokeWidth={2} />
-          </a>
-        ) : (
-          <></>
-        )}
       </Header.LeftItem>
       <Header.RightItem>
         <div className="hidden gap-3 md:flex">

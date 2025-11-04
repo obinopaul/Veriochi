@@ -480,22 +480,21 @@ function viewLogs(){
         echo
         echo "Select a Service you want to view the logs for:"
         echo "   1) Web"
-        echo "   2) Space"
-        echo "   3) API"
-        echo "   4) Worker"
-        echo "   5) Beat-Worker"
-        echo "   6) Migrator"
-        echo "   7) Proxy"
-        echo "   8) Redis"
-        echo "   9) Postgres"
-        echo "   10) Minio"
-        echo "   11) RabbitMQ"
+        echo "   2) API"
+        echo "   3) Worker"
+        echo "   4) Beat-Worker"
+        echo "   5) Migrator"
+        echo "   6) Proxy"
+        echo "   7) Redis"
+        echo "   8) Postgres"
+        echo "   9) Minio"
+        echo "   10) RabbitMQ"
         echo "   0) Back to Main Menu"
         echo 
         read -p "Service: " DOCKER_SERVICE_NAME
 
-        until (( DOCKER_SERVICE_NAME >= 0 && DOCKER_SERVICE_NAME <= 11 )); do
-            echo "Invalid selection. Please enter a number between 0 and 11."
+        until (( DOCKER_SERVICE_NAME >= 0 && DOCKER_SERVICE_NAME <= 10 )); do
+            echo "Invalid selection. Please enter a number between 0 and 10."
             read -p "Service: " DOCKER_SERVICE_NAME
         done
 
@@ -505,16 +504,15 @@ function viewLogs(){
         else
             case $DOCKER_SERVICE_NAME in
                 1) viewSpecificLogs "web";;
-                2) viewSpecificLogs "space";;
-                3) viewSpecificLogs "api";;
-                4) viewSpecificLogs "worker";;
-                5) viewSpecificLogs "beat-worker";;
-                6) viewSpecificLogs "migrator";;
-                7) viewSpecificLogs "proxy";;
-                8) viewSpecificLogs "plane-redis";;
-                9) viewSpecificLogs "plane-db";;
-                10) viewSpecificLogs "plane-minio";;
-                11) viewSpecificLogs "plane-mq";;
+                2) viewSpecificLogs "api";;
+                3) viewSpecificLogs "worker";;
+                4) viewSpecificLogs "beat-worker";;
+                5) viewSpecificLogs "migrator";;
+                6) viewSpecificLogs "proxy";;
+                7) viewSpecificLogs "plane-redis";;
+                8) viewSpecificLogs "plane-db";;
+                9) viewSpecificLogs "plane-minio";;
+                10) viewSpecificLogs "plane-mq";;
                 0) askForAction;;
                 *) echo "INVALID SERVICE NAME SUPPLIED";;
             esac
@@ -524,7 +522,6 @@ function viewLogs(){
         ARG_SERVICE_NAME=$(echo "$ARG_SERVICE_NAME" | tr '[:upper:]' '[:lower:]')
         case $ARG_SERVICE_NAME in
             web) viewSpecificLogs "web";;
-            space) viewSpecificLogs "space";;
             api) viewSpecificLogs "api";;
             worker) viewSpecificLogs "worker";;
             beat-worker) viewSpecificLogs "beat-worker";;

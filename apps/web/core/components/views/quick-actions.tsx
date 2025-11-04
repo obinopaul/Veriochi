@@ -15,7 +15,6 @@ import { captureClick } from "@/helpers/event-tracker.helper";
 // hooks
 import { useUser, useUserPermissions } from "@/hooks/store/user";
 import { useViewMenuItems } from "@/plane-web/components/views/helper";
-import { PublishViewModal, useViewPublish } from "@/plane-web/components/views/publish";
 // local imports
 import { DeleteProjectViewModal } from "./delete-view-modal";
 import { CreateUpdateProjectViewModal } from "./modal";
@@ -39,11 +38,6 @@ export const ViewQuickActions: React.FC<Props> = observer((props) => {
   // auth
   const isOwner = view?.owned_by === data?.id;
   const isAdmin = allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.PROJECT, workspaceSlug, projectId);
-
-  const { isPublishModalOpen, setPublishModalOpen, publishContextMenu } = useViewPublish(
-    !!view.anchor,
-    isAdmin || isOwner
-  );
 
   const viewLink = `${workspaceSlug}/projects/${projectId}/views/${view.id}`;
   const handleCopyText = () =>
@@ -69,8 +63,6 @@ export const ViewQuickActions: React.FC<Props> = observer((props) => {
     viewId: view.id,
   });
 
-  if (publishContextMenu) MENU_ITEMS.splice(2, 0, publishContextMenu);
-
   const CONTEXT_MENU_ITEMS = MENU_ITEMS.map((item) => ({
     ...item,
     action: () => {
@@ -89,7 +81,6 @@ export const ViewQuickActions: React.FC<Props> = observer((props) => {
         data={view}
       />
       <DeleteProjectViewModal data={view} isOpen={deleteViewModal} onClose={() => setDeleteViewModal(false)} />
-      <PublishViewModal isOpen={isPublishModalOpen} onClose={() => setPublishModalOpen(false)} view={view} />
       <ContextMenu parentRef={parentRef} items={CONTEXT_MENU_ITEMS} />
       <CustomMenu ellipsis placement="bottom-end" closeOnSelect buttonClassName={customClassName}>
         {MENU_ITEMS.map((item) => {
