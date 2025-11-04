@@ -55,6 +55,7 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
   // states
   const [slugError, setSlugError] = useState(false);
   const [invalidSlug, setInvalidSlug] = useState(false);
+  const [hostname, setHostname] = useState("");
   // router
   const router = useAppRouter();
   // store hooks
@@ -111,6 +112,10 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
         });
       });
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") setHostname(window.location.host);
+  }, []);
 
   useEffect(
     () => () => {
@@ -169,7 +174,7 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
             <span className="ml-0.5 text-red-500">*</span>
           </label>
           <div className="flex w-full items-center rounded-md border-[0.5px] border-custom-border-200 px-3">
-            <span className="whitespace-nowrap text-sm text-custom-text-200">{window && window.location.host}/</span>
+            <span className="whitespace-nowrap text-sm text-custom-text-200">{hostname ? `${hostname}/` : ""}</span>
             <Controller
               control={control}
               name="slug"
