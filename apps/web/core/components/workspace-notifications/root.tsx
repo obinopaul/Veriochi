@@ -5,29 +5,22 @@ import { observer } from "mobx-react";
 import useSWR from "swr";
 // plane imports
 import { ENotificationLoader, ENotificationQueryParamType } from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
 import { EmptyStateCompact } from "@plane/propel/empty-state";
 import { cn } from "@plane/utils";
-// components
-import { LogoSpinner } from "@/components/common/logo-spinner";
 // hooks
 import { useWorkspaceNotifications } from "@/hooks/store/notifications";
 import { useWorkspace } from "@/hooks/store/use-workspace";
-import { useUserPermissions } from "@/hooks/store/user";
-import { useResolvedAssetPath } from "@/hooks/use-resolved-asset-path";
 import { useWorkspaceIssueProperties } from "@/hooks/use-workspace-issue-properties";
 // plane web imports
 import { useNotificationPreview } from "@/plane-web/hooks/use-notification-preview";
 // local imports
-import { InboxContentRoot } from "../inbox/content";
+const inboxRetiredMessage = "Inbox conversations are no longer available.";
 
 type NotificationsRootProps = {
   workspaceSlug?: string;
 };
 
 export const NotificationsRoot = observer(({ workspaceSlug }: NotificationsRootProps) => {
-  // plane hooks
-  const { t } = useTranslation();
   // hooks
   const { currentWorkspace } = useWorkspace();
   const {
@@ -37,12 +30,10 @@ export const NotificationsRoot = observer(({ workspaceSlug }: NotificationsRootP
     notificationIdsByWorkspaceId,
     getNotifications,
   } = useWorkspaceNotifications();
-  const { fetchUserProjectInfo } = useUserPermissions();
   const { isWorkItem, PeekOverviewComponent, setPeekWorkItem } = useNotificationPreview();
   // derived values
   const { workspace_slug, project_id, issue_id, is_inbox_issue } =
     notificationLiteByNotificationId(currentSelectedNotificationId);
-  const resolvedPath = useResolvedAssetPath({ basePath: "/empty-state/intake/issue-detail" });
 
   // fetching workspace work item properties
   useWorkspaceIssueProperties(workspaceSlug);
@@ -64,13 +55,6 @@ export const NotificationsRoot = observer(({ workspaceSlug }: NotificationsRootP
   );
 
   // fetching user project member info
-  const { isLoading: projectMemberInfoLoader } = useSWR(
-    workspace_slug && project_id && is_inbox_issue
-      ? `PROJECT_MEMBER_PERMISSION_INFO_${workspace_slug}_${project_id}`
-      : null,
-    workspace_slug && project_id && is_inbox_issue ? () => fetchUserProjectInfo(workspace_slug, project_id) : null
-  );
-
   const embedRemoveCurrentNotification = useCallback(
     () => setCurrentSelectedNotificationId(undefined),
     [setCurrentSelectedNotificationId]
@@ -93,23 +77,9 @@ export const NotificationsRoot = observer(({ workspaceSlug }: NotificationsRootP
       ) : (
         <>
           {is_inbox_issue === true && workspace_slug && project_id && issue_id ? (
-            <>
-              {projectMemberInfoLoader ? (
-                <div className="w-full h-full flex justify-center items-center">
-                  <LogoSpinner />
-                </div>
-              ) : (
-                <InboxContentRoot
-                  setIsMobileSidebar={() => {}}
-                  isMobileSidebar={false}
-                  workspaceSlug={workspace_slug}
-                  projectId={project_id}
-                  inboxIssueId={issue_id}
-                  isNotificationEmbed
-                  embedRemoveCurrentNotification={embedRemoveCurrentNotification}
-                />
-              )}
-            </>
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center text-sm text-custom-text-300">
+              <span>{inboxRetiredMessage}</span>
+            </div>
           ) : (
             <PeekOverviewComponent embedIssue embedRemoveCurrentNotification={embedRemoveCurrentNotification} />
           )}

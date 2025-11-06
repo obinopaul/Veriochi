@@ -68,6 +68,9 @@
     "uuid": "catalog:"
   },
   "devDependencies": {
+    "@jridgewell/gen-mapping": "0.3.5",
+    "@jridgewell/resolve-uri": "3.1.1",
+    "@jridgewell/sourcemap-codec": "1.5.0",
     "@plane/eslint-config": "workspace:*",
     "@plane/tailwind-config": "workspace:*",
     "@plane/typescript-config": "workspace:*",
@@ -76,6 +79,9 @@
     "@types/react": "catalog:",
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "catalog:",
+    "browserslist": "4.24.2",
+    "electron-to-chromium": "1.5.218",
+    "node-releases": "2.0.14",
     "prettier": "^3.2.5",
     "typescript": "catalog:"
   }

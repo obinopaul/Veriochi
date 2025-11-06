@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "專案",
     pages: "頁面",
-    new_work_item: "新工作項目",
+    new_project: "新專案",
     home: "首頁",
     your_work: "你的工作",
     inbox: "收件匣",

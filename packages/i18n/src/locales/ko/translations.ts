@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "프로젝트",
     pages: "페이지",
-    new_work_item: "새 작업 항목",
+    new_project: "새 프로젝트",
     home: "홈",
     your_work: "나의 작업",
     inbox: "받은 편지함",

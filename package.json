@@ -17,6 +17,12 @@
     "check:format": "turbo run check:format"
   },
   "devDependencies": {
+    "@jridgewell/gen-mapping": "0.3.5",
+    "@jridgewell/resolve-uri": "3.1.1",
+    "@jridgewell/sourcemap-codec": "1.5.0",
+    "browserslist": "4.24.2",
+    "electron-to-chromium": "1.5.0",
+    "node-releases": "2.0.14",
     "prettier": "latest",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "turbo": "^2.5.8"

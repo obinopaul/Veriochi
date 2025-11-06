@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "プロジェクト",
     pages: "ページ",
-    new_work_item: "新規作業項目",
+    new_project: "新規プロジェクト",
     home: "ホーム",
     your_work: "あなたの作業",
     inbox: "受信トレイ",

@@ -63,7 +63,7 @@ const nextConfig = {
       },
       {
         source: "/:workspaceSlug/projects/:projectId/inbox",
-        destination: "/:workspaceSlug/projects/:projectId/intake",
+        destination: "/:workspaceSlug/projects/:projectId/issues",
         permanent: true,
       },
       {

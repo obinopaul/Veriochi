@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Projek",
     pages: "Halaman",
-    new_work_item: "Item kerja baru",
+    new_project: "Proyek baru",
     home: "Beranda",
     your_work: "Pekerjaan anda",
     inbox: "Inbox",

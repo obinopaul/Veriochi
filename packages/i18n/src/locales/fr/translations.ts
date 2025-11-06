@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Projets",
     pages: "Pages",
-    new_work_item: "Nouvel élément de travail",
+    new_project: "Nouveau projet",
     home: "Accueil",
     your_work: "Votre travail",
     inbox: "Boîte de réception",

@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Projekty",
     pages: "Stránky",
-    new_work_item: "Nová pracovní položka",
+    new_project: "Nový projekt",
     home: "Domov",
     your_work: "Vaše práce",
     inbox: "Doručená pošta",

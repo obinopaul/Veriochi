@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Projeler",
     pages: "Sayfalar",
-    new_work_item: "Yeni iş öğesi",
+    new_project: "Yeni proje",
     home: "Ana Sayfa",
     your_work: "Çalışmalarınız",
     inbox: "Gelen Kutusu",

@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Dự án",
     pages: "Trang",
-    new_work_item: "Mục công việc mới",
+    new_project: "Dự án mới",
     home: "Trang chủ",
     your_work: "Công việc của tôi",
     inbox: "Hộp thư đến",

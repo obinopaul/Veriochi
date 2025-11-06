@@ -11,7 +11,6 @@ import { useTranslation } from "@plane/i18n";
 import { joinUrlPath } from "@plane/utils";
 // components
 import { SidebarNavItem } from "@/components/sidebar/sidebar-navigation";
-import { NotificationAppSidebarOption } from "@/components/workspace-notifications/notification-app-sidebar-option";
 // hooks
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useWorkspace } from "@/hooks/store/use-workspace";
@@ -40,7 +39,7 @@ export const SidebarItemBase: FC<Props> = observer(({ item, additionalRender, ad
     if (isExtendedSidebarOpened) toggleExtendedSidebar(false);
   };
 
-  const staticItems = ["home", "inbox", "pi_chat", "projects", "your_work", ...(additionalStaticItems || [])];
+  const staticItems = ["home", "pi_chat", "projects", "your_work", ...(additionalStaticItems || [])];
   const slug = workspaceSlug?.toString() || "";
 
   if (!allowPermissions(item.access, EUserPermissionsLevel.WORKSPACE, slug)) return null;
@@ -60,7 +59,6 @@ export const SidebarItemBase: FC<Props> = observer(({ item, additionalRender, ad
           {icon}
           <p className="text-sm leading-5 font-medium">{t(item.labelTranslationKey)}</p>
         </div>
-        {item.key === "inbox" && <NotificationAppSidebarOption workspaceSlug={slug} />}
         {additionalRender?.(item.key, slug)}
       </SidebarNavItem>
     </Link>

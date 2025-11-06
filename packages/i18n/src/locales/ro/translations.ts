@@ -2,7 +2,7 @@ export default {
   sidebar: {
     projects: "Proiecte",
     pages: "Documentație",
-    new_work_item: "Activitate nouă",
+    new_project: "Proiect nou",
     home: "Acasă",
     your_work: "Munca ta",
     inbox: "Căsuță de mesaje",
