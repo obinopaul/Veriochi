@@ -29,6 +29,16 @@ Local iterative development (fast route)
    | Admin console (`apps/admin`) | `pnpm --filter ./apps/admin dev` | 3001 | Shares components with `apps/web`; keep API running. | Administrative control plane for operators and support staff. Provides user/account lifecycle actions, tenant provisioning, plan enforcement, impersonation tools, and system monitoring dashboards. Mirrors the main web app’s component stack but exposes privileged routes guarded by admin auth middleware and relies heavily on `@plane/services` for elevated API endpoints. |
    | UI library (`packages/ui`) | `pnpm --filter @plane/ui dev` | n/a | Rebuilds shared components; frontends pick up changes automatically. | Central design system and component kit consumed by every Next.js surface. Ships Tailwind-driven primitives, form controls, layout shells, modals, and iconography that the apps register through Turborepo pipelines. Running the dev watcher allows instant feedback when tweaking tokens, theming, or complex widgets like kanban cards and dashboard tiles. |
 
+   **Database migrations**
+
+   When you bring up the backend stack in Docker (`docker compose -f docker-compose-local.yml up api worker beat-worker`) make sure pending Django migrations are applied, otherwise the services will loop on “Waiting for database migrations to complete…”. Run:
+
+   ```pwsh
+   docker compose -f docker-compose-local.yml exec api python manage.py migrate
+   ```
+
+   You only need to rerun this after new migrations land. Once it finishes with `OK`, the API, worker, and beat containers will continue booting normally.
+
 3. For the Django API stack open another tab:
 
    - Option A (containers): `docker compose -f docker-compose-local.yml up api worker beat-worker` to run gunicorn, Celery worker, and beat with live code mounts.
