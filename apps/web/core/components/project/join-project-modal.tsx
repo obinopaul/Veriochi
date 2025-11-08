@@ -35,7 +35,7 @@ export const JoinProjectModal: React.FC<TJoinProjectModalProps> = (props) => {
 
     joinProject(workspaceSlug, project.id)
       .then(() => {
-        router.push(`/${workspaceSlug}/projects/${project.id}/issues`);
+  router.push(`/${workspaceSlug}/projects/${project.id}`);
         fetchProjectDetails(workspaceSlug, project.id);
         handleClose();
       })

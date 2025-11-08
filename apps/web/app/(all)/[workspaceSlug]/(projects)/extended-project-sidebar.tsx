@@ -80,7 +80,7 @@ export const ExtendedProjectSidebar = observer(() => {
   const handleClose = () => toggleExtendedProjectSidebar(false);
 
   const handleCopyText = (projectId: string) => {
-    copyUrlToClipboard(`${workspaceSlug}/projects/${projectId}/issues`).then(() => {
+    copyUrlToClipboard(`${workspaceSlug}/projects/${projectId}`).then(() => {
       setToast({
         type: TOAST_TYPE.SUCCESS,
         title: t("link_copied"),

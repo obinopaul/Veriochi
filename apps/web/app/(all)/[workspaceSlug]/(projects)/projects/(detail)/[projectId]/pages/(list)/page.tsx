@@ -12,7 +12,7 @@ const ProjectPagesPage = () => {
   useEffect(() => {
     if (!workspaceSlug || !projectId) return;
 
-    router.replace(`/${workspaceSlug.toString()}/projects/${projectId.toString()}/issues`);
+  router.replace(`/${workspaceSlug.toString()}/projects/${projectId.toString()}`);
   }, [router, workspaceSlug, projectId]);
 
   return null;

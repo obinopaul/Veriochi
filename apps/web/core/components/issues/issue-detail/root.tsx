@@ -298,7 +298,7 @@ export const IssueDetailRoot: FC<TIssueDetailRoot> = observer((props) => {
           description={t("issue.empty_state.issue_detail.description")}
           primaryButton={{
             text: t("issue.empty_state.issue_detail.primary_button.text"),
-            onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}/issues`),
+            onClick: () => router.push(`/${workspaceSlug}/projects/${projectId}`),
           }}
         />
       ) : (

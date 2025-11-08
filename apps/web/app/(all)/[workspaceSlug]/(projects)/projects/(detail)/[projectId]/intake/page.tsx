@@ -14,7 +14,7 @@ const ProjectInboxPage = observer(() => {
 
   useEffect(() => {
     if (workspaceSlug && projectId) {
-      router.replace(`/${workspaceSlug}/projects/${projectId}/issues`);
+      router.replace(`/${workspaceSlug}/projects/${projectId}`);
     }
   }, [router, workspaceSlug, projectId]);
 
@@ -29,7 +29,7 @@ const ProjectInboxPage = observer(() => {
     <div className="flex h-full flex-col">
       <PageHead title="Inbox" />
       <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-custom-text-300">
-        <span>The project inbox has been removed. Redirecting you to project issues.</span>
+        <span>The project inbox has been removed. Redirecting you to project work items.</span>
       </div>
     </div>
   );

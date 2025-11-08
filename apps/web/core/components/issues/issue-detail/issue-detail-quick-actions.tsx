@@ -87,7 +87,7 @@ export const IssueDetailQuickActions: FC<Props> = observer((props) => {
       const deleteIssue = issue?.archived_at ? removeArchivedIssue : removeIssue;
       const redirectionPath = issue?.archived_at
         ? `/${workspaceSlug}/projects/${projectId}/archives/issues`
-        : `/${workspaceSlug}/projects/${projectId}/issues`;
+        : `/${workspaceSlug}/projects/${projectId}`;
 
       return deleteIssue(workspaceSlug, projectId, issueId).then(() => {
         router.push(redirectionPath);
@@ -112,8 +112,8 @@ export const IssueDetailQuickActions: FC<Props> = observer((props) => {
 
   const handleArchiveIssue = async () => {
     try {
-      await archiveIssue(workspaceSlug, projectId, issueId);
-      router.push(`/${workspaceSlug}/projects/${projectId}/issues`);
+    await archiveIssue(workspaceSlug, projectId, issueId);
+    router.push(`/${workspaceSlug}/projects/${projectId}`);
       captureSuccess({
         eventName: WORK_ITEM_TRACKER_EVENTS.archive,
         payload: { id: issueId },

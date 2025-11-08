@@ -22,7 +22,7 @@ export const RecentProject = (props: BlockProps) => {
 
   if (!projectDetails) return <></>;
 
-  const projectLink = `/${workspaceSlug}/projects/${projectDetails?.id}/issues`;
+  const projectLink = `/${workspaceSlug}/projects/${projectDetails?.id}`;
 
   return (
     <ListItem

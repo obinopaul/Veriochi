@@ -69,7 +69,7 @@ export const ProjectNavigation: FC<TProjectItemsProps> = observer((props) => {
         i18n_key: "sidebar.work_items",
         key: "work_items",
         name: "Work items",
-        href: `/${workspaceSlug}/projects/${projectId}/issues`,
+        href: `/${workspaceSlug}/projects/${projectId}`,
         icon: WorkItemsIcon,
         access: [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
         shouldRender: true,
@@ -131,19 +131,30 @@ export const ProjectNavigation: FC<TProjectItemsProps> = observer((props) => {
 
   const isActive = useCallback(
     (item: TNavigationItem) => {
-      // work item condition
-      const workItemCondition = workItemId && workItem && !workItem?.is_epic && workItem?.project_id === projectId;
-      // epic condition
-      const epicCondition = workItemId && workItem && workItem?.is_epic && workItem?.project_id === projectId;
-      // is active
-      const isWorkItemActive = item.key === "work_items" && workItemCondition;
-      const isEpicActive = item.key === "epics" && epicCondition;
-      // pathname condition
-      const isPathnameActive = pathname.includes(item.href);
-      // return
-      return isWorkItemActive || isEpicActive || isPathnameActive;
+      const projectBasePath = `/${workspaceSlug}/projects/${projectId}`;
+      const subPath = pathname.startsWith(projectBasePath) ? pathname.slice(projectBasePath.length) : null;
+
+      if (item.key === "work_items") {
+        const normalizedSubPath = subPath ?? "";
+        const isWorkItemPath =
+          pathname === item.href ||
+          normalizedSubPath === "" ||
+          normalizedSubPath === "/" ||
+          normalizedSubPath.startsWith("/issues") ||
+          normalizedSubPath.startsWith("/work-items");
+        const workItemCondition =
+          workItemId && workItem && !workItem?.is_epic && workItem?.project_id === projectId;
+        return Boolean(isWorkItemPath || workItemCondition);
+      }
+
+      if (item.key === "epics") {
+        const epicCondition = workItemId && workItem && workItem?.is_epic && workItem?.project_id === projectId;
+        return Boolean(epicCondition || pathname === item.href || pathname.startsWith(`${item.href}/`));
+      }
+
+      return pathname === item.href || pathname.startsWith(`${item.href}/`);
     },
-    [pathname, workItem, workItemId, projectId]
+    [pathname, projectId, workspaceSlug, workItem, workItemId]
   );
 
   return (
