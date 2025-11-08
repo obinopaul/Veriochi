@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import { observer } from "mobx-react";
-import { ChartNoAxesColumn, SlidersHorizontal } from "lucide-react";
 // plane imports
 import { EIssueFilterType, ISSUE_STORE_TO_FILTERS_MAP } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
@@ -105,11 +104,7 @@ export const HeaderFilters = observer((props: Props) => {
         />
       </div>
       <WorkItemFiltersToggle entityType={storeType} entityId={projectId} />
-      <FiltersDropdown
-        miniIcon={<SlidersHorizontal className="size-3.5" />}
-        title={t("common.display")}
-        placement="bottom-end"
-      >
+      <FiltersDropdown title={t("common.display")} placement="bottom-end">
         <DisplayFiltersSelection
           layoutDisplayFiltersOptions={layoutDisplayFiltersOptions}
           displayFilters={issueFilters?.displayFilters ?? {}}
@@ -128,10 +123,8 @@ export const HeaderFilters = observer((props: Props) => {
           variant="neutral-primary"
           size="sm"
         >
-          <div className="hidden @4xl:flex">{t("common.analytics")}</div>
-          <div className="flex @4xl:hidden">
-            <ChartNoAxesColumn className="size-3.5" />
-          </div>
+          <span aria-hidden="true" className="block h-3.5 w-3.5 bg-transparent" />
+          <span className="sr-only">{t("common.analytics")}</span>
         </Button>
       ) : (
         <></>

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { EUserPermissionsLevel, EUserPermissions } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { CycleIcon, ModuleIcon, PageIcon, ViewsIcon, WorkItemsIcon } from "@plane/propel/icons";
+import { CycleIcon, ModuleIcon, ViewsIcon, WorkItemsIcon } from "@plane/propel/icons";
 import type { EUserProjectRoles } from "@plane/types";
 // plane ui
 // components
@@ -104,16 +104,6 @@ export const ProjectNavigation: FC<TProjectItemsProps> = observer((props) => {
         access: [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
         shouldRender: project.issue_views_view,
         sortOrder: 4,
-      },
-      {
-        i18n_key: "sidebar.pages",
-        key: "pages",
-        name: "Pages",
-        href: `/${workspaceSlug}/projects/${projectId}/pages`,
-        icon: PageIcon,
-        access: [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
-        shouldRender: project.page_view,
-        sortOrder: 5,
       },
     ],
     [project]

@@ -56,16 +56,6 @@ export const getProjectFeatureNavigation = (
     sortOrder: 4,
   },
   {
-    i18n_key: "sidebar.pages",
-    key: EProjectFeatureKey.PAGES,
-    name: "Pages",
-    href: `/${workspaceSlug}/projects/${projectId}/pages`,
-    icon: PageIcon,
-    access: [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
-    shouldRender: project.page_view,
-    sortOrder: 5,
-  },
-  {
     i18n_key: "sidebar.intake",
     key: EProjectFeatureKey.INTAKE,
     name: "Intake",
@@ -73,6 +63,6 @@ export const getProjectFeatureNavigation = (
     icon: IntakeIcon,
     access: [EUserPermissions.ADMIN, EUserPermissions.MEMBER, EUserPermissions.GUEST],
     shouldRender: project.inbox_view,
-    sortOrder: 6,
+    sortOrder: 5,
   },
 ];

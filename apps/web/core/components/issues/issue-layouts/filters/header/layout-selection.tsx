@@ -6,8 +6,6 @@ import { ISSUE_LAYOUTS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { EIssueLayoutTypes } from "@plane/types";
-// ui
-// types
 import { IssueLayoutIcon } from "@/components/issues/issue-layouts/layout-icon";
 import { usePlatformOS } from "@/hooks/use-platform-os";
 // hooks
@@ -34,6 +32,7 @@ export const LayoutSelection: React.FC<Props> = (props) => {
         <Tooltip key={layout.key} tooltipContent={t(layout.i18n_title)} isMobile={isMobile}>
           <button
             type="button"
+            aria-label={t(layout.i18n_title)}
             className={`group grid h-[22px] w-7 place-items-center overflow-hidden rounded transition-all hover:bg-custom-background-100 ${
               selectedLayout == layout.key ? "bg-custom-background-100 shadow-custom-shadow-2xs" : ""
             }`}
